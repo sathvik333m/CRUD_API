@@ -70,6 +70,49 @@ app.post('/tasks',(req,res)=>{
     res.status(201).json(task);
 });
 
+app.put('/tasks/:id',(req,res)=>{
+    const id=Number(req.params.id);
+    const task=tasks.find(t=>t.id===id);
+
+    if(!task){
+        return res.status(404).json({
+            error:"Task not found"
+        })
+    }
+    const {title,done}=req.body;
+
+    if(title===undefined && done===undefined){
+        return res.status(400).json({
+            error:"Nothing to update"
+        })
+    }
+
+    if(title!==undefined){
+        if(typeof title!=='string' && title.trim()===''){
+            return res.status(400).json({
+                error:"Task must be non-empty string"
+            })
+        }
+        task.title=title;
+    }
+    if(done!==undefined){
+        task.done=done;
+    }
+    res.json(task);
+})
+
+app.delete("/tasks/:id",(req,res)=>{
+    const id=Number(req.params.id);
+    const index=tasks.findIndex(t=>t.id===id);
+
+    if(index==-1){
+        return res.status(404).json({
+            error:"Task not found"
+        })
+    }
+    tasks.splice(index,1);
+    res.setstatus(204);
+});
 
 
 app.listen(PORT,()=>{
