@@ -111,7 +111,7 @@ app.delete("/tasks/:id",(req,res)=>{
         })
     }
     tasks.splice(index,1);
-    res.setstatus(204);
+    return res.sendStatus(204);
 });
 
 
