@@ -92,7 +92,7 @@ app.put('/tasks/:id',(req,res)=>{
     }
 
     if(title!==undefined){
-        if(typeof title!=='string' && title.trim()===''){
+        if(typeof title!=='string' || title.trim()===''){
             return res.status(400).json({
                 error:"Task must be non-empty string"
             })
