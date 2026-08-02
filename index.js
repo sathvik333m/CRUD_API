@@ -1,6 +1,10 @@
-const express=require("express")
-const app=express()
-const PORT=3000
+const express=require("express");
+const app=express();
+
+const swaggerUi=require("swagger-ui-express");
+const swaggerDocument=require("./openapi.json");
+
+const PORT=3000;
 
 app.use(express.json());
 
@@ -114,6 +118,8 @@ app.delete("/tasks/:id",(req,res)=>{
     return res.sendStatus(204);
 });
 
+
+app.use('/docs',swaggerUi.serve,swaggerUi.setup(swaggerDocument));
 
 app.listen(PORT,()=>{
     console.log(`Server running on http://localhost:${PORT}`);
