@@ -69,12 +69,11 @@ app.post('/tasks',(req,res)=>{
             error:`Title is needed`
         });
     }
-    const task={
-        id:tasks.length+1,
-        title:title,
-        done:false
-    }
-    tasks.push(task);
+    const result=db
+            .prepare("INSERT INTO tasks (title,done) VALUES (?,?)")
+            .run(title,0);
+
+    const task=db.prepare("SELECT * FROM tasks where id=?").get(result.lastInsertRowid);
     res.status(201).json(task);
 });
 
