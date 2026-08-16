@@ -90,7 +90,7 @@ app.put('/tasks/:id',(req,res)=>{
     
     const updatedTask=db.prepare(`SELECT * FROM tasks WHERE id=?`).get(id);
 
-    res.json(updatedTask);
+    res.json(updatedTask); 
 })
 
 app.delete("/tasks/:id",(req,res)=>{
