@@ -83,10 +83,10 @@ app.put('/tasks/:id',(req,res)=>{
             })
         }
     }
-    const newTitle= title!==undefined?title:existingTask.task;
+    const newTitle= title!==undefined?title:existingTask.title;
     const newDone= done!==undefined?done:existingTask.done;
 
-    db.prepare(`UPDATE tasks SET title=? ,done=? , WHERE id=?`).run(newTitle,newDone,id);
+    db.prepare(`UPDATE tasks SET title=? ,done=? WHERE id=?`).run(newTitle,newDone,id);
     
     const updatedTask=db.prepare(`SELECT * FROM tasks WHERE id=?`).get(id);
 
