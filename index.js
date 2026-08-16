@@ -24,25 +24,6 @@ app.get("/health",(req,res)=>{
     });
 });
 
-
-let tasks = [
-    {
-        id:1,
-        title:"Learn Express",
-        done:false
-    },
-    {
-        id:2,
-        title:"Build CRUD API",
-        done:false
-    },
-    {
-        id:3,
-        title:"Push to GitHub",
-        done:true
-    }
-];
-
 app.get('/tasks',(req,res)=>{
     const tasks=db.prepare("SELECT * FROM tasks").all();
     res.json(tasks);
@@ -79,15 +60,16 @@ app.post('/tasks',(req,res)=>{
 
 app.put('/tasks/:id',(req,res)=>{
     const id=Number(req.params.id);
-    const task=tasks.find(t=>t.id===id);
+    const {title,done}=req.body;
 
-    if(!task){
+    const existingTask=db.prepare(`SELECT * FROM tasks WHERE id= ?`).get(id);
+
+    if(!existingTask){
         return res.status(404).json({
             error:"Task not found"
         })
     }
-    const {title,done}=req.body;
-
+   
     if(title===undefined && done===undefined){
         return res.status(400).json({
             error:"Nothing to update"
@@ -100,24 +82,30 @@ app.put('/tasks/:id',(req,res)=>{
                 error:"Task must be non-empty string"
             })
         }
-        task.title=title;
     }
-    if(done!==undefined){
-        task.done=done;
-    }
-    res.json(task);
+    const newTitle= title!==undefined?title:existingTask.task;
+    const newDone= done!==undefined?done:existingTask.done;
+
+    db.prepare(`UPDATE tasks SET title=? done=? WHERE id=?`).run(newTitle,newDone,id);
+    
+    const updatedTask=db.prepare(`SELECT * FROM tasks WHERE id=?`).get(id);
+
+    res.json(updatedTask);
 })
 
 app.delete("/tasks/:id",(req,res)=>{
     const id=Number(req.params.id);
-    const index=tasks.findIndex(t=>t.id===id);
 
-    if(index==-1){
+    const result=db.prepare(`DELETE FROM tasks WHERE id=?`).run(id);
+
+    console.log("Deleting ID:", id);
+    console.log("Rows deleted:", result.changes);
+
+    if(result.changes===0){
         return res.status(404).json({
             error:"Task not found"
         })
     }
-    tasks.splice(index,1);
     return res.sendStatus(204);
 });
 
